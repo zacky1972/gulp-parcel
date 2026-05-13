@@ -23,6 +23,34 @@ function removeDirectory(dir)
     }
 }
 
+function collectFiles(dir)
+{
+    let results = [];
+
+    fs.readdirSync(dir).forEach(file => {
+        const filePath = path.join(dir, file);
+
+        if(fs.statSync(filePath).isDirectory()) {
+            results = results.concat(collectFiles(filePath));
+        } else {
+            results.push(filePath);
+        }
+    });
+
+    return results;
+}
+
+function createOutputFile(file, filePath, base)
+{
+    const outputFile = file.clone ? file.clone({contents: false}) : Object.assign({}, file);
+    outputFile.path = filePath;
+    outputFile.base = base;
+    outputFile.contents = fs.readFileSync(filePath);
+    outputFile.stat = fs.lstatSync(filePath);
+
+    return outputFile;
+}
+
 module.exports = function GulpParcel(...options)
 {
     const PLUGIN_NAME = 'gulp-parcel';
@@ -40,6 +68,7 @@ module.exports = function GulpParcel(...options)
     options.production = (typeof(options.production) == "undefined") ? !options.watch : options.production;
     const isTmp = options.outDir ? false : true;
     options.outDir = options.outDir ? options.outDir : ('.tmp-gulp-compile-' + pid);
+    options.publicURL = (typeof(options.publicURL) == "undefined" && typeof(options.publicUrl) == "undefined" && isTmp) ? './' : options.publicURL;
 
     const source = g_options.source ? g_options.source : '';
 
@@ -93,7 +122,8 @@ module.exports = function GulpParcel(...options)
                     removeDirectory(options.outDir);
                 }
                 this.emit('error', new PluginError(PLUGIN_NAME, "Build FAIL:" + file.path));
-                cb(null, file);
+                cb();
+                return;
             }
 
 			// In case dealing with Pug files
@@ -102,21 +132,22 @@ module.exports = function GulpParcel(...options)
 				out_flname = out_flname.substr(0, out_flname.lastIndexOf('.') + 1) + 'html';
 			}
             try {
-                fs.readFile(out_flname, (err, data) => {
-                    // when out file name isn't correct/readable/accessible
-                    // data can be undefined
-					if(data === undefined){
-						var err = 'Unable to read to ' + out_flname;
-						throw err;
-					}
-                    file.contents = data;
-                    this.push(file);
-                    if(options.production && isTmp) {
+                if(isTmp) {
+                    const bundleOutDir = path.resolve(options_c.outDir);
+                    collectFiles(bundleOutDir).forEach(filePath => {
+                        this.push(createOutputFile(file, filePath, bundleOutDir));
+                    });
+                    if(options.production) {
                         removeDirectory(options.outDir);
                     }
-                    cb(null, file);
-                });
+                    cb();
+                    return;
+                }
+
+                file.contents = fs.readFileSync(out_flname);
                 file.stat = fs.lstatSync(out_flname);
+                this.push(file);
+                cb();
             } catch (err) {
                 if(isTmp) {
                     removeDirectory(options.outDir);
@@ -127,5 +158,3 @@ module.exports = function GulpParcel(...options)
         });
     });
 }
-
-
