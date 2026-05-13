@@ -3,6 +3,9 @@
   "version": "0.3.6",
   "description": "parcel plugin for gulp.js",
   "main": "index.js",
+  "scripts": {
+    "test": "node test/index.js"
+  },
   "repository": "https://github.com/zacky1972/gulp-parcel.git",
   "author": "Susumu Yamazaki <zacky1972@gmail.com>",
   "license": "MIT",
