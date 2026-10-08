@@ -1,0 +1,65 @@
+{
+  "evidenceOnly": true,
+  "upstream": "6e811cd565456017c69f3fe796562c520180eea6",
+  "sourceSHA256": "3ea8e1ce32d0bdcc5f1abd6ff0b290d3283cbd0ed7e72cc6a7cca9b388789b3c",
+  "node": "v24.19.0",
+  "dependencies": {
+    "parcel-bundler": "1.10.3",
+    "through2": "2.0.5",
+    "plugin-error": "0.1.2",
+    "vinyl": "2.2.1",
+    "@babel/preset-env": "7.1.6"
+  },
+  "environment": {
+    "PARCEL_WORKERS": "1",
+    "PARCEL_MAX_CONCURRENT_CALLS": "1",
+    "NODE_OPTIONS": "--openssl-legacy-provider"
+  },
+  "cases": [
+    {
+      "name": "html-temporary",
+      "entry": "index.html",
+      "outFile": "built-page.html",
+      "emitted": 1,
+      "errorEvents": 0,
+      "callbacks": 1,
+      "listenerDelta": 0,
+      "temporaryRemoved": true,
+      "explicitOutputRetained": false
+    },
+    {
+      "name": "renamed-javascript-temporary",
+      "entry": "input.js",
+      "outFile": "renamed.bundle.js",
+      "emitted": 1,
+      "errorEvents": 0,
+      "callbacks": 1,
+      "listenerDelta": 0,
+      "temporaryRemoved": true,
+      "explicitOutputRetained": false
+    },
+    {
+      "name": "broken-project-temporary",
+      "entry": "broken.js",
+      "outFile": "broken.bundle.js",
+      "emitted": 0,
+      "errorEvents": 1,
+      "callbacks": 1,
+      "listenerDelta": 0,
+      "temporaryRemoved": true,
+      "explicitOutputRetained": false
+    },
+    {
+      "name": "renamed-javascript-explicit-output",
+      "entry": "input.js",
+      "outFile": "retained.bundle.js",
+      "emitted": 1,
+      "errorEvents": 0,
+      "callbacks": 1,
+      "listenerDelta": 0,
+      "temporaryRemoved": true,
+      "explicitOutputRetained": true
+    }
+  ],
+  "unhandledRejections": []
+}
